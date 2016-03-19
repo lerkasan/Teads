@@ -23,7 +23,7 @@ class TNode
         
         public:
         TNode(int vname, TNode *vfather, int vdepth)
-        {
+        { 
             name = vname;
             father = vfather;
             depth = vdepth;
