@@ -18,4 +18,8 @@ public class NumberNodes {
 		return nodeSet.remove(numbNode);
 	}
 
+	public Set<Integer> getNodeSet() {
+		return nodeSet;
+	}
+
 }

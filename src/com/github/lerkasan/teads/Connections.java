@@ -30,5 +30,17 @@ public class Connections {
 		}
 		return connectedNumbers.add(toNode);
 	}
+	
+	public boolean containsKey(Integer key) {
+		return connectionsMap.containsKey(key);
+	}
+	
+	public Set<Integer> get(Integer key) {
+		return connectionsMap.get(key);
+	}
+	
+	public void put(Integer key, Set<Integer> value) {
+		connectionsMap.put(key, value);
+	}
 
 }

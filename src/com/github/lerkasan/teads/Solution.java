@@ -1,6 +1,7 @@
 package com.github.lerkasan.teads;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class Solution {
@@ -16,14 +17,29 @@ public class Solution {
 		nodeConnections = new Connections();
 	}
 	
-	public void init() throws IOException { 
-        try (Scanner in = new Scanner(System.in)) {
+	public Node getRoot() {
+		return root;
+	}
+
+	public NumberNodes getLeaves() {
+		return leaves;
+	}
+
+	public NumberNodes getAllNodes() {
+		return allNodes;
+	}
+
+	public Connections getNodeConnections() {
+		return nodeConnections;
+	}
+
+	public void init(String filePath) { 
+       // try (Scanner in = new Scanner(System.in)) {
+		try (Scanner in = new Scanner(Paths.get(filePath))) {
         	int n = in.nextInt(); // the number of adjacency relations
-        	int fromNumber = in.nextInt();
-    		int toNumber = in.nextInt();
         	for (int i = 0; i < n; i++) {
-        		fromNumber = in.nextInt(); 
-        		toNumber = in.nextInt(); 
+        		int fromNumber = in.nextInt(); 
+        		int toNumber = in.nextInt(); 
         		if (allNodes.add(fromNumber)) {
         			leaves.add(fromNumber);
         		} else {
@@ -34,13 +50,33 @@ public class Solution {
         		} else {
         			leaves.remove(toNumber);
         		}
-        		nodeConnections.add(fromNumber, toNumber);
+        		if (nodeConnections.containsKey(fromNumber)) {
+        			nodeConnections.add(fromNumber, toNumber);
+        		} else if (nodeConnections.containsKey(toNumber)) {
+        			nodeConnections.add(toNumber, fromNumber);
+        		} else {
+        			nodeConnections.add(fromNumber, toNumber);
+        		}
         	}
         }
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void printLeaves() {
+		System.out.println("Leaves: ");
+		for (Integer i : leaves.getNodeSet()) {
+			System.out.print(i+" ");
+		}
 	}
 	
 	public static void main(String[] args) {
-		
+		Solution test1 = new Solution();
+		test1.init("input\\test1.txt");
+		Tree tree1 = new Tree();
+		tree1.build(test1.getNodeConnections());
+		test1.printLeaves();
 
 	}
 

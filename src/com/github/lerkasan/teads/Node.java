@@ -17,4 +17,36 @@ public class Node {
 		this.depth = 0;
 	}
 
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+
+	public Node getFather() {
+		return father;
+	}
+
+	public void setFather(Node father) {
+		this.father = father;
+	}
+
+	public int getDepth() {
+		return depth;
+	}
+
+	public void setDepth(int depth) {
+		if (depth >=0) {
+			this.depth = depth;
+		} else {
+			throw new IllegalArgumentException("Node depth can't be negative.");
+		}
+	}
+	
+	public String toString() {
+		return ""+number;
+	}
+
 }
