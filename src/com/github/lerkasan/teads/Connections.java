@@ -35,6 +35,10 @@ public class Connections {
 		return connectionsMap.containsKey(key);
 	}
 	
+	public boolean containsValue(Integer value) {
+		return connectionsMap.containsValue(value);
+	}
+	
 	public Set<Integer> get(Integer key) {
 		return connectionsMap.get(key);
 	}

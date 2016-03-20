@@ -48,5 +48,15 @@ public class Node {
 	public String toString() {
 		return ""+number;
 	}
+	
+	public int updateFatherDepth() {
+        if ( (father != null) && (depth + 1 > father.depth) ) {
+            father.setDepth(depth + 1);
+        }
+        return father.depth;
+    /*  if (maxDepth < aNode.getDepth() + 1) {
+    		maxDepth = aNode.getDepth() + 1;
+    	} */
+    }  
 
 }

@@ -10,6 +10,7 @@ public class Solution {
 		tree1.init("input\\test1.txt");
 		tree1.build();
 		tree1.printLeaves();
+		tree1.walkFromLeavesCountingSteps(tree1.getFirstLevelNodes());
 	}
 
 }

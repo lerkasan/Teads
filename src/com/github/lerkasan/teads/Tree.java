@@ -9,28 +9,42 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class Tree {
+	int maxDepth;
 	Node root;
-	NumberNodes leaves;
-	NumberNodes allNodes;
+	Set<Integer> intLeaves;
+	Set<Node> leaves;
+	Set<Integer> allIntNodes;
+	Map<Integer, Node> createdNodes;
 	Connections nodeConnections;
 	
 	public Tree() {
+		maxDepth = 0;
 		root = new Node();
-		leaves = new NumberNodes();
-		allNodes = new NumberNodes();
+		intLeaves = new HashSet<>();
+		leaves = new HashSet<>();
+		allIntNodes = new HashSet<>();
+		createdNodes = new HashMap<>();
 		nodeConnections = new Connections();
 	}
 	
+	public int getMaxDepth() {
+		return maxDepth;
+	}
+
 	public Node getRoot() {
 		return root;
 	}
 
-	public NumberNodes getLeaves() {
+	public Set<Integer> getintLeaves() {
+		return intLeaves;
+	}
+	
+	public Set<Node> getLeaves() {
 		return leaves;
 	}
 
-	public NumberNodes getAllNodes() {
-		return allNodes;
+	public Set<Integer> getallIntNodes() {
+		return allIntNodes;
 	}
 
 	public Connections getNodeConnections() {
@@ -44,15 +58,15 @@ public class Tree {
         	for (int i = 0; i < n; i++) {
         		int fromNumber = in.nextInt(); 
         		int toNumber = in.nextInt(); 
-        		if (allNodes.add(fromNumber)) {
-        			leaves.add(fromNumber);
+        		if (allIntNodes.add(fromNumber)) {
+        			intLeaves.add(fromNumber);
         		} else {
-        			leaves.remove(fromNumber);
+        			intLeaves.remove(fromNumber);
         		} 
-        		if (allNodes.add(toNumber)) {
-        			leaves.add(toNumber);
+        		if (allIntNodes.add(toNumber)) {
+        			intLeaves.add(toNumber);
         		} else {
-        			leaves.remove(toNumber);
+        			intLeaves.remove(toNumber);
         		}
         		if (nodeConnections.containsKey(fromNumber)) {
         			nodeConnections.add(fromNumber, toNumber);
@@ -72,7 +86,6 @@ public class Tree {
 		Node fromNode;
 		Node toNode;
 		Set<Node> possibleRoots = new HashSet<>();
-		Map<Integer, Node> createdNodes = new HashMap<>();
 		Set<Pair<Node>> builtConnections = new HashSet<>();
 		for (Map.Entry<Integer, Set<Integer>> entry : nodeConnections.getConnectionsMap().entrySet()) {
 			Integer key = entry.getKey();
@@ -82,6 +95,9 @@ public class Tree {
 				possibleRoots.add(fromNode);
 			} else {
 				fromNode = createdNodes.get(key);
+			}
+			if (intLeaves.contains(key)) {
+				leaves.add(fromNode);
 			}
 			for (Integer value : entry.getValue()) {
 				if (! createdNodes.containsKey(value)) {
@@ -94,8 +110,13 @@ public class Tree {
 					possibleRoots.remove(toNode);
 				}
 				builtConnections.add(new Pair<>(fromNode,toNode));
+				if (intLeaves.contains(value)) {
+					leaves.add(toNode);
+				}
 			}
 		}	
+		
+		//Printing - to be fully commented to the end
 		for (Pair<Node> i : builtConnections) {
 			System.out.println("Connection from " + i.getFrom() + " to " + i.getTo());
 			System.out.print(i.getFrom().toString() + " <-- ");
@@ -121,10 +142,62 @@ public class Tree {
 		
 	}
 	
+	public Set<Node> getFirstLevelNodes() {
+		Set<Node> firstLevelNodes = new HashSet<>();
+		System.out.println("\nFirst level:");
+		for (Integer leaf : intLeaves) {
+			if (nodeConnections.containsKey(leaf)) {
+				for (Integer connected : nodeConnections.get(leaf)) {
+					createdNodes.get(connected).setDepth(1);
+					firstLevelNodes.add(createdNodes.get(connected));
+					System.out.println(connected+" ");
+				}
+			}
+			//if (nodeConnections.containsValue(leaf)) {
+				for (Map.Entry<Integer, Set<Integer>> entry : nodeConnections.getConnectionsMap().entrySet()) {
+					if (entry.getValue().contains(leaf)) {
+						createdNodes.get(entry.getKey()).setDepth(1);
+						firstLevelNodes.add(createdNodes.get(entry.getKey()));
+						System.out.println(entry.getKey()+" ");
+					}
+				}
+			//}
+		}
+		return firstLevelNodes;
+	}
+	
+	public void walkFromLeavesCountingSteps(Set<Node> nodes) {
+		int currentDepth = 0;
+		Set<Node> nextNodes = new HashSet<>();
+		for (Node aNode : nodes) {
+			if (aNode.getFather() != null) {
+				currentDepth = aNode.updateFatherDepth();
+				nextNodes.add(aNode.getFather());
+			} else {
+				currentDepth = aNode.getDepth();
+			}
+			if (currentDepth > maxDepth) {
+				maxDepth = currentDepth;
+			}
+		}
+		nextNodes.remove(root);
+		if (! nextNodes.isEmpty()) {
+			System.out.println("\nNext nodes:");
+			for (Node i : nextNodes) {
+				System.out.print(i.getNumber()+ " ");
+			}
+			walkFromLeavesCountingSteps(nextNodes);
+		}
+	}
+	
 	public void printLeaves() {
 		System.out.println("Leaves: ");
-		for (Integer i : leaves.getNodeSet()) {
+		for (Integer i : intLeaves) {
 			System.out.print(i+" ");
+		}
+		System.out.println();
+		for (Node i : leaves) {
+			System.out.print(i.getNumber()+" ");
 		}
 	}
 }
