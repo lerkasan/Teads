@@ -15,7 +15,7 @@ public class Tree {
 	Set<Node> leaves;
 	Set<Integer> allIntNodes;
 	Map<Integer, Node> createdNodes;
-	Connections nodeConnections;
+	Map<Integer, Set<Integer>> nodeConnections;
 	
 	public Tree() {
 		maxDepth = 0;
@@ -24,7 +24,7 @@ public class Tree {
 		leaves = new HashSet<>();
 		allIntNodes = new HashSet<>();
 		createdNodes = new HashMap<>();
-		nodeConnections = new Connections();
+		nodeConnections = new HashMap<>();
 	}
 	
 	public int getMaxDepth() {
@@ -47,8 +47,19 @@ public class Tree {
 		return allIntNodes;
 	}
 
-	public Connections getNodeConnections() {
+	public Map<Integer, Set<Integer>> getNodeConnections() {
 		return nodeConnections;
+	}
+	
+	public boolean addConnection(Integer fromNode, Integer toNode) {
+		Set<Integer> connectedNumbers = nodeConnections.get(fromNode);
+		if (connectedNumbers == null) {
+			connectedNumbers = new HashSet<>();
+			connectedNumbers.add(toNode);
+			nodeConnections.put(fromNode, connectedNumbers);
+			return true;
+		}
+		return connectedNumbers.add(toNode);
 	}
 
 	public void init(String filePath) { 
@@ -69,11 +80,11 @@ public class Tree {
         			intLeaves.remove(toNumber);
         		}
         		if (nodeConnections.containsKey(fromNumber)) {
-        			nodeConnections.add(fromNumber, toNumber);
+        			addConnection(fromNumber, toNumber);
         		} else if (nodeConnections.containsKey(toNumber)) {
-        			nodeConnections.add(toNumber, fromNumber);
+        			addConnection(toNumber, fromNumber);
         		} else {
-        			nodeConnections.add(fromNumber, toNumber);
+        			addConnection(fromNumber, toNumber);
         		}
         	}
         }
@@ -87,7 +98,7 @@ public class Tree {
 		Node toNode;
 		Set<Node> possibleRoots = new HashSet<>();
 		Set<Pair<Node>> builtConnections = new HashSet<>();
-		for (Map.Entry<Integer, Set<Integer>> entry : nodeConnections.getConnectionsMap().entrySet()) {
+		for (Map.Entry<Integer, Set<Integer>> entry : nodeConnections.entrySet()) {
 			Integer key = entry.getKey();
 			if (! createdNodes.containsKey(key)) {
 				fromNode = new Node(key, null);
@@ -154,7 +165,7 @@ public class Tree {
 				}
 			}
 			//if (nodeConnections.containsValue(leaf)) {
-				for (Map.Entry<Integer, Set<Integer>> entry : nodeConnections.getConnectionsMap().entrySet()) {
+				for (Map.Entry<Integer, Set<Integer>> entry : nodeConnections.entrySet()) {
 					if (entry.getValue().contains(leaf)) {
 						createdNodes.get(entry.getKey()).setDepth(1);
 						firstLevelNodes.add(createdNodes.get(entry.getKey()));
@@ -199,5 +210,13 @@ public class Tree {
 		for (Node i : leaves) {
 			System.out.print(i.getNumber()+" ");
 		}
+	}
+	
+	public static void main(String[] args) {	
+		Tree tree1 = new Tree();
+		tree1.init("input\\test1.txt");
+		tree1.build();
+		tree1.printLeaves();
+		tree1.walkFromLeavesCountingSteps(tree1.getFirstLevelNodes());
 	}
 }
