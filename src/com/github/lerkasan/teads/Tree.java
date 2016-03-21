@@ -9,8 +9,10 @@ import java.util.Scanner;
 import java.util.Set;
 
 public class Tree {
+	int steps = 1;
 	int maxDepth;
 	Node root;
+	Set<Node> possibleRoots;
 	Set<Integer> intLeaves;
 	Set<Node> leaves;
 	Set<Integer> allIntNodes;
@@ -20,11 +22,16 @@ public class Tree {
 	public Tree() {
 		maxDepth = 0;
 		root = new Node();
+		possibleRoots = new HashSet<>();
 		intLeaves = new HashSet<>();
 		leaves = new HashSet<>();
 		allIntNodes = new HashSet<>();
 		createdNodes = new HashMap<>();
 		nodeConnections = new HashMap<>();
+	}
+	
+	public int getSteps() {
+		return steps;
 	}
 	
 	public int getMaxDepth() {
@@ -96,7 +103,7 @@ public class Tree {
 	public void build() {
 		Node fromNode;
 		Node toNode;
-		Set<Node> possibleRoots = new HashSet<>();
+		possibleRoots = new HashSet<>();
 		Set<Pair<Node>> builtConnections = new HashSet<>();
 		for (Map.Entry<Integer, Set<Integer>> entry : nodeConnections.entrySet()) {
 			Integer key = entry.getKey();
@@ -197,6 +204,7 @@ public class Tree {
 			for (Node i : nextNodes) {
 				System.out.print(i.getNumber()+ " ");
 			}
+			steps++;
 			walkFromLeavesCountingSteps(nextNodes);
 		}
 	}
@@ -212,11 +220,46 @@ public class Tree {
 		}
 	}
 	
+	public Node chooseRoot() {
+		if (! leaves.isEmpty()) {
+			for (Node leaf : leaves) {
+				if (leaf.getFather() == null) {
+					root = leaf;
+					System.out.println("Root is from leaves. " + root);
+					return root;
+				}
+			}
+		} else {
+			System.out.println("There are no leaves");
+			if (! possibleRoots.isEmpty()) {
+				for (Node possibleRoot : possibleRoots) {
+					if (possibleRoot.getFather() == null) {
+						root = possibleRoot;
+						System.out.println("Root is from possible roots. " + root);
+						return root;
+					}
+				}
+			}
+		}
+		return root;
+	}
+	
+	public int getMaxSteps1() {
+		return getRoot().getDepth()/2 + getRoot().getDepth()%2;
+	}
+	
+	public int getMaxSteps2() {
+		return getSteps()/2 + getSteps()%2;
+	}
+	
 	public static void main(String[] args) {	
 		Tree tree1 = new Tree();
-		tree1.init("input\\test1.txt");
+		tree1.init("input\\test10.txt");
 		tree1.build();
 		tree1.printLeaves();
+		tree1.chooseRoot();
 		tree1.walkFromLeavesCountingSteps(tree1.getFirstLevelNodes());
+		System.out.println("\nResult: Root depth div by 2: " + tree1.getMaxSteps1());
+		System.out.println("\nResult: Steps div by 2: " + tree1.getSteps());
 	}
 }
