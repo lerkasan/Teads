@@ -75,10 +75,10 @@ public class Tree {
 		return connectedNumbers.add(toNode);
 	}
 
-	//public void init(String filePath) { 
-	public void init() { 
-        try (Scanner in = new Scanner(System.in)) {
-		//try (Scanner in = new Scanner(Paths.get(filePath))) {
+	public void init(String filePath) { 
+	//public void init() { 
+        //try (Scanner in = new Scanner(System.in)) {
+		try (Scanner in = new Scanner(Paths.get(filePath))) {
         	int n = in.nextInt(); // the number of adjacency relations
         	for (int i = 0; i < n; i++) {
         		int fromNumber = in.nextInt(); 
@@ -103,9 +103,9 @@ public class Tree {
         		}*/
         	}
         }
-		/*catch (IOException e) {
+		catch (IOException e) {
 			e.printStackTrace();
-		}*/
+		}
 	}
 		
 	public void build() {
@@ -124,12 +124,14 @@ public class Tree {
 			}
 			if (intLeaves.contains(key)) {
 				leaves.add(fromNode);
+				possibleRoots.add(fromNode);
 			}
 			for (Integer value : entry.getValue()) {
 				if (! createdNodes.containsKey(value)) {
 					toNode = new Node(value, fromNode);
 					createdNodes.put(value, toNode);
-					possibleRoots.add(fromNode);
+					//possibleRoots.add(fromNode);
+					possibleRoots.remove(toNode);
 				} else {
 					toNode = createdNodes.get(value);
 					toNode.setFather(fromNode);
@@ -158,14 +160,13 @@ public class Tree {
 				System.out.println("no father");
 			}
 			System.out.println();
-		}
+		}*/
 		
 			System.out.println("Possible roots: ");
 			for (Node i : possibleRoots) {
 				System.out.print(i+" ");
 			}
 			System.out.println();
-		*/
 	}
 	
 	public Set<Node> getFirstLevelNodes() {
@@ -233,18 +234,18 @@ public class Tree {
 			for (Node leaf : leaves) {
 				if (leaf.getFather() == null) {
 					root = leaf;
-					//System.out.println("Root is from leaves. " + root);
+					System.out.println("Root is from leaves. " + root);
 					rootFromLeaves = true;
 					return root;
 				}
 			}
 		} else {
-			//System.out.println("There are no leaves");
+			System.out.println("There are no leaves");
 			if (! possibleRoots.isEmpty()) {
 				for (Node possibleRoot : possibleRoots) {
 					if (possibleRoot.getFather() == null) {
 						root = possibleRoot;
-						//System.out.println("Root is from possible roots. " + root);
+						System.out.println("Root is from possible roots. " + root);
 						return root;
 					}
 				}
@@ -266,17 +267,17 @@ public class Tree {
 	
 	public static void main(String[] args) {	
 		Tree tree1 = new Tree();
-		//tree1.init("input\\test10.txt");
-		tree1.init();
+		tree1.init("input\\test10.txt");
+		//tree1.init();
 		tree1.build();
 		Node root = tree1.chooseRoot();
 		tree1.getLeaves().remove(root);
 		tree1.getintLeaves().remove(root.getNumber());
-		//tree1.printLeaves();
+		tree1.printLeaves();
 		tree1.walkFromLeavesCountingSteps(tree1.getLeaves());
-		/*System.out.println("\nResult: Root depth div by 2: " + tree1.getMaxSteps());
+		System.out.println("\nResult: Root depth div by 2: " + tree1.getMaxSteps());
 		System.out.println("\nResult: Steps div by 2: " + tree1.getMaxSteps2());
-		System.out.println("\nResult: Steps: " + tree1.getSteps());*/
+		System.out.println("\nResult: Steps: " + tree1.getSteps());
 		System.out.print(tree1.getMaxSteps());
 	}
 }
